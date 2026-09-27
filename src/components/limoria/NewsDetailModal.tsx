@@ -66,13 +66,17 @@ export const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
 
           <div className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed space-y-3 pt-2 border-t border-[#144732]">
             <p className="font-semibold text-emerald-200">
-              {currentLang === 'bn' ? article.summaryBn : article.summary}
+              {currentLang === 'bn' ? (article.summaryBn || article.summary) : article.summary}
             </p>
             <p>
-              The Ministry of Information and State Broadcasting reported that this development marks a historic step forward in the Sovereign Republic of Limoria's strategic 2030 development agenda under the direction of President Limon.
+              {currentLang === 'bn' 
+                ? 'তথ্য ও সম্প্রচার মন্ত্রণালয়ের প্রেস বিজ্ঞপ্তি অনুসারে, মহামান্য রাষ্ট্রপতি মামুন হোসেন লিমনের নির্দেশনায় এই উদ্যোগটি লিমোরিয়ার সার্বভৌম উন্নয়ন ও জনকল্যাণে নতুন দিগন্ত উন্মোচন করেছে।' 
+                : "The Ministry of Information and State Broadcasting reported that this development marks a historic step forward in the Sovereign Republic of Limoria's strategic 2030 development agenda under the direction of President Mamun Hossen Limon."}
             </p>
             <p>
-              Citizen delegates and regional governors expressed unanimous support during the national assembly convened at the Fairview National Parliament. Digital copies of the state memorandum have been filed with the national gazette archive.
+              {currentLang === 'bn'
+                ? 'ফেয়ারভিউ পার্লামেন্টে ৮টি অঞ্চলের প্রতিনিধিরা এই মাইলফলককে স্বাগত জানিয়েছেন। রাষ্ট্রীয় আর্কাইভসে এই ঐতিহাসিক দলিলের ডিজিটাল কপি স্থায়ীভাবে সংরক্ষণ করা হয়েছে।'
+                : 'Citizen delegates and regional governors expressed unanimous support during the national assembly convened at the Fairview National Parliament. Digital copies of the state memorandum have been filed with the national gazette archive.'}
             </p>
           </div>
         </div>
@@ -81,19 +85,38 @@ export const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
         <div className="p-4 bg-[#0a2e1f] border-t border-[#1b5a3e] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
+              onClick={() => {
+                if ('speechSynthesis' in window) {
+                  window.speechSynthesis.cancel();
+                  const textToSpeak = currentLang === 'bn'
+                    ? (article.titleBn || article.title) + '. ' + (article.summaryBn || article.summary)
+                    : article.title + '. ' + article.summary;
+                  const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                  utterance.lang = currentLang === 'bn' ? 'bn-BD' : 'en-US';
+                  window.speechSynthesis.speak(utterance);
+                }
+              }}
+              className="p-2 rounded-lg bg-[#072418] hover:bg-[#11432f] text-emerald-300 hover:text-white transition-colors cursor-pointer flex items-center gap-1.5 text-xs"
+              title="Listen to News"
+            >
+              <span>🔊</span>
+              <span className="hidden sm:inline">{currentLang === 'bn' ? 'শুনুন' : 'Listen'}</span>
+            </button>
+            <button
               onClick={() => window.print()}
-              className="p-2 rounded-lg bg-[#072418] hover:bg-[#11432f] text-emerald-300 hover:text-white transition-colors"
+              className="p-2 rounded-lg bg-[#072418] hover:bg-[#11432f] text-emerald-300 hover:text-white transition-colors cursor-pointer"
               title="Print Article"
             >
               <Printer className="w-4 h-4" />
             </button>
             <button
               onClick={() => {
-                if (navigator.share) {
-                  navigator.share({ title: article.title, text: article.summary, url: window.location.href });
+                if (navigator.clipboard) {
+                  navigator.clipboard.writeText(`${article.title}\n${article.summary}\nhttps://limoria.gov`);
+                  alert(currentLang === 'bn' ? 'সংবাদের লিঙ্ক কপি করা হয়েছে!' : 'News link copied to clipboard!');
                 }
               }}
-              className="p-2 rounded-lg bg-[#072418] hover:bg-[#11432f] text-emerald-300 hover:text-white transition-colors"
+              className="p-2 rounded-lg bg-[#072418] hover:bg-[#11432f] text-emerald-300 hover:text-white transition-colors cursor-pointer"
               title="Share"
             >
               <Share2 className="w-4 h-4" />
@@ -104,7 +127,7 @@ export const NewsDetailModal: React.FC<NewsDetailModalProps> = ({
             onClick={onClose}
             className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#175739] to-[#103e29] border border-[#e2b43b] text-[#ffd700] font-bold text-xs hover:scale-105 transition-transform cursor-pointer"
           >
-            Close Article
+            {currentLang === 'bn' ? 'বন্ধ করুন' : 'Close Article'}
           </button>
         </div>
 

@@ -24,12 +24,24 @@ import { VideoModal } from './components/limoria/VideoModal.tsx';
 import { FullMapModal } from './components/limoria/FullMapModal.tsx';
 import { NewsDetailModal } from './components/limoria/NewsDetailModal.tsx';
 import { ImageViewerModal } from './components/limoria/ImageViewerModal.tsx';
+import { BreakingNewsTicker } from './components/limoria/BreakingNewsTicker.tsx';
+import { NewsPublishModal } from './components/limoria/NewsPublishModal.tsx';
 import { Language, ServiceItem, NewsArticle, GalleryItem, EventItem } from './types/limoria.ts';
-import { LIMORIA_SERVICES, LATEST_NEWS } from './data/limoriaData.ts';
+import { LIMORIA_SERVICES, LATEST_NEWS, PRESIDENT_BIO } from './data/limoriaData.ts';
+import { getStoredOrDailyNews, generateFictionalNewsStory, saveNewsToStorage } from './services/limoriaNewsService.ts';
 
 export default function App() {
   const [currentLang, setCurrentLang] = useState<Language>('en');
   const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Dynamic Daily Fictional News feed with auto-update
+  const [newsList, setNewsList] = useState<NewsArticle[]>(() => getStoredOrDailyNews());
+  const [isNewsPublishModalOpen, setIsNewsPublishModalOpen] = useState(false);
+
+  // President photo state with local storage persistence
+  const [presidentPhoto, setPresidentPhoto] = useState<string>(() => {
+    return localStorage.getItem('limoria_president_custom_photo') || PRESIDENT_BIO.photoUrl;
+  });
 
   // Modal controls
   const [isGitHubModalOpen, setIsGitHubModalOpen] = useState(false);
@@ -46,8 +58,68 @@ export default function App() {
 
   const showNotification = (msg: string) => {
     setBannerNotice(msg);
-    setTimeout(() => setBannerNotice(null), 4000);
+    setTimeout(() => setBannerNotice(null), 4500);
   };
+
+  const handleGenerateFictionalNews = () => {
+    const freshArticle = generateFictionalNewsStory();
+    const updated = [freshArticle, ...newsList];
+    setNewsList(updated);
+    saveNewsToStorage(updated);
+    showNotification(
+      currentLang === 'bn'
+        ? `✨ নতুন কাল্পনিক সংবাদ যুক্ত হয়েছে: ${freshArticle.titleBn}`
+        : `✨ New Fictional Story Published: ${freshArticle.title}`
+    );
+  };
+
+  const handlePublishCustomNews = (article: NewsArticle) => {
+    const updated = [article, ...newsList];
+    setNewsList(updated);
+    saveNewsToStorage(updated);
+    showNotification(
+      currentLang === 'bn'
+        ? `📢 আপনার সংবাদটি লিমোরিয়া জাতীয় বুলেটিনে প্রকাশিত হয়েছে!`
+        : `📢 Your story has been broadcast to the Limoria State Gazette!`
+    );
+  };
+
+  const handleUploadPresidentPhoto = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      if (dataUrl) {
+        setPresidentPhoto(dataUrl);
+        localStorage.setItem('limoria_president_custom_photo', dataUrl);
+        showNotification(
+          currentLang === 'bn'
+            ? 'রাষ্ট্রপতির আসল ছবি সফলভাবে আপলোড ও ওয়েবসাইটে সেট করা হয়েছে!'
+            : 'Official President photo updated and set across the portal!'
+        );
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Support direct Ctrl+V clipboard image paste anywhere on page
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (items) {
+        for (let i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf('image') !== -1) {
+            const file = items[i].getAsFile();
+            if (file) {
+              handleUploadPresidentPhoto(file);
+              break;
+            }
+          }
+        }
+      }
+    };
+    window.addEventListener('paste', handlePaste);
+    return () => window.removeEventListener('paste', handlePaste);
+  }, [currentLang]);
 
   const handleActionClick = (actionId: string) => {
     switch (actionId) {
@@ -148,9 +220,23 @@ export default function App() {
         onSearch={handleGlobalSearch}
       />
 
+      {/* Breaking News Ticker (Automatic Daily Fictional Stories) */}
+      <BreakingNewsTicker
+        currentLang={currentLang}
+        newsList={newsList}
+        onArticleClick={(article) => setSelectedNews(article)}
+        onGenerateNextStory={handleGenerateFictionalNews}
+        onOpenPublishModal={() => setIsNewsPublishModalOpen(true)}
+      />
+
       {/* 2. Hero Section (President Limon, Motto, 3 Column Layout, Video & Latest News) */}
       <HeroSection
         currentLang={currentLang}
+        presidentPhoto={presidentPhoto}
+        onUploadPhoto={handleUploadPresidentPhoto}
+        newsList={newsList}
+        onGenerateNextStory={handleGenerateFictionalNews}
+        onOpenPublishModal={() => setIsNewsPublishModalOpen(true)}
         onExploreClick={() => setIsFullMapModalOpen(true)}
         onWatchVideoClick={() => setIsVideoModalOpen(true)}
         onNewsClick={(article) => setSelectedNews(article)}
@@ -269,6 +355,8 @@ export default function App() {
         isOpen={isPresidentModalOpen}
         onClose={() => setIsPresidentModalOpen(false)}
         currentLang={currentLang}
+        presidentPhoto={presidentPhoto}
+        onUploadPhoto={handleUploadPresidentPhoto}
       />
 
       <ServiceDetailModal
@@ -295,6 +383,13 @@ export default function App() {
         isOpen={!!selectedNews}
         onClose={() => setSelectedNews(null)}
         currentLang={currentLang}
+      />
+
+      <NewsPublishModal
+        isOpen={isNewsPublishModalOpen}
+        onClose={() => setIsNewsPublishModalOpen(false)}
+        currentLang={currentLang}
+        onPublishNews={handlePublishCustomNews}
       />
 
       <ImageViewerModal

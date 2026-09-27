@@ -3,7 +3,7 @@ import { GoogleGenAI } from '@google/genai';
 const SYSTEM_INSTRUCTION = `
 You are the official Limoria AI Citizen Assistant for the Government of Limoria (Gov. of Limoria).
 Motto: "Peace, Progress, Prosperity".
-President: President Limon.
+President: President Mamun Hossen Limon (মহামান্য রাষ্ট্রপতি মামুন হোসেন লিমন).
 Capital: Fairview Metro.
 Regions (8): 
 1. Aurora (Northern high peaks, astronomy, clean energy)
@@ -86,10 +86,10 @@ export async function askLimoriaAssistant(userMessage: string, lang: 'en' | 'bn'
       : 'You can launch and register a corporation in Limoria within 24 hours using the "Business License" portal. Documents needed: Articles of Incorporation, registered address, and founder identification.';
   }
 
-  if (query.includes('president') || query.includes('limon') || query.includes('রাষ্ট্রপতি') || query.includes('লিমন')) {
+  if (query.includes('president') || query.includes('limon') || query.includes('mamun') || query.includes('রাষ্ট্রপতি') || query.includes('লিমন') || query.includes('মামুন')) {
     return lang === 'bn'
-      ? 'মহামান্য রাষ্ট্রপতি লিমন সার্বভৌম লিমোরিয়া প্রজাতন্ত্রের রাষ্ট্রপ্রধান। তাঁর মূল দর্শন: "শান্তি, প্রগতি, সমৃদ্ধি" এবং লিমোরিয়াকে ১০০% নবায়নযোগ্য ও প্রযুক্তিনির্ভর রাষ্ট্রে রূপান্তর করা।'
-      : 'President Limon serves as the President of the Sovereign Republic of Limoria under the national motto "Peace, Progress, Prosperity". His administration spearheaded universal healthcare, national 100% renewable power, and high-speed rail connectivity.';
+      ? 'মহামান্য রাষ্ট্রপতি মামুন হোসেন লিমন সার্বভৌম লিমোরিয়া প্রজাতন্ত্রের রাষ্ট্রপ্রধান। তাঁর মূল দর্শন: "শান্তি, প্রগতি, সমৃদ্ধি" এবং লিমোরিয়াকে ১০০% নবায়নযোগ্য ও প্রযুক্তিনির্ভর রাষ্ট্রে রূপান্তর করা।'
+      : 'President Mamun Hossen Limon serves as the President of the Sovereign Republic of Limoria under the national motto "Peace, Progress, Prosperity". His administration spearheaded universal healthcare, national 100% renewable power, and high-speed rail connectivity.';
   }
 
   if (query.includes('tourist') || query.includes('tourism') || query.includes('visit') || query.includes('ভ্রমণ') || query.includes('পর্যটন')) {

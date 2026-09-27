@@ -279,8 +279,8 @@ export const LATEST_NEWS: NewsArticle[] = [
   },
   {
     id: 'news-3',
-    title: "President Limon's International Visit",
-    titleBn: 'রাষ্ট্রপতি লিমনের আন্তর্জাতিক দ্বিপাক্ষিক সফর সফল',
+    title: "President Mamun Hossen Limon's International Visit",
+    titleBn: 'রাষ্ট্রপতি মামুন হোসেন লিমনের আন্তর্জাতিক দ্বিপাক্ষিক সফর সফল',
     date: '15 Jun 2025',
     summary: 'Strengthening global partnerships: historic bilateral treaties signed on clean hydrogen energy trade and artificial intelligence ethics.',
     summaryBn: 'সবুজ শক্তি এবং প্রযুক্তি খাতে আন্তর্জাতিক চুক্তি স্বাক্ষরিত হলো।',
@@ -415,12 +415,15 @@ export const FAQS: FaqItem[] = [
 ];
 
 export const PRESIDENT_BIO = {
-  name: 'President Limon',
-  nameBn: 'রাষ্ট্রপতি লিমন',
+  name: 'President Mamun Hossen Limon',
+  nameShort: 'Mamun Hossen Limon',
+  nameBn: 'রাষ্ট্রপতি মামুন হোসেন লিমন',
   title: 'President of the Sovereign Republic of Limoria',
   titleBn: 'সার্বভৌম লিমোরিয়া প্রজাতন্ত্রের মহামান্য রাষ্ট্রপতি',
   motto: 'Peace, Progress, Prosperity',
   mottoBn: 'শান্তি, প্রগতি, সমৃদ্ধি',
+  deskTitle: 'MAMUN HOSSEN LIMON',
+  photoUrl: '/president_limon.jpg',
   vision: 'To build a high-technology, environmentally sustainable, united republic where every citizen enjoys liberty, world-class education, and boundless opportunity.',
   tenure: '2022 - Present',
   achievements: [

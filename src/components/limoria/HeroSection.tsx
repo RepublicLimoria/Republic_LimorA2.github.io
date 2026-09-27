@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { Play, ArrowRight, Search, MapPin, Building2, Users, ChevronRight } from 'lucide-react';
+import { Play, ArrowRight, Search, MapPin, Building2, Users, ChevronRight, Camera, Upload, Sparkles, PlusCircle } from 'lucide-react';
 import { Language, NewsArticle } from '../../types/limoria.ts';
-import { LATEST_NEWS } from '../../data/limoriaData.ts';
+import { PRESIDENT_BIO } from '../../data/limoriaData.ts';
 
 interface HeroSectionProps {
   currentLang: Language;
+  presidentPhoto: string;
+  onUploadPhoto: (file: File) => void;
+  newsList: NewsArticle[];
+  onGenerateNextStory: () => void;
+  onOpenPublishModal: () => void;
   onExploreClick: () => void;
   onWatchVideoClick: () => void;
   onNewsClick: (article: NewsArticle) => void;
@@ -14,6 +19,11 @@ interface HeroSectionProps {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
   currentLang,
+  presidentPhoto,
+  onUploadPhoto,
+  newsList,
+  onGenerateNextStory,
+  onOpenPublishModal,
   onExploreClick,
   onWatchVideoClick,
   onNewsClick,
@@ -98,31 +108,55 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               onClick={onPresidentClick}
               className="relative rounded-2xl overflow-hidden border border-[#e2b43b]/40 bg-gradient-to-b from-[#0d3b28] to-[#062015] shadow-2xl cursor-pointer group hover:border-[#ffd700] transition-all transform hover:-translate-y-1"
             >
-              {/* Presidential background with flag & mountains */}
-              <div className="h-64 sm:h-72 w-full relative overflow-hidden">
+              {/* Presidential background with flag & desk */}
+              <div className="h-64 sm:h-76 w-full relative overflow-hidden bg-[#051c12]">
                 <img 
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80" 
-                  alt="President Limon"
+                  src={presidentPhoto || PRESIDENT_BIO.photoUrl} 
+                  alt={PRESIDENT_BIO.name}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/src/assets/images/president_limon_portrait_1790527309947.jpg';
+                  }}
                   className="w-full h-full object-cover object-top filter brightness-95 group-hover:scale-105 transition-transform duration-700"
                 />
                 
                 {/* Official Flag Overlay & Eagle Emblem */}
-                <div className="absolute top-3 left-3 bg-[#0a2e1e]/90 border border-[#e2b43b]/60 px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider text-[#f5c518] flex items-center gap-1.5 backdrop-blur-sm">
+                <div className="absolute top-3 left-3 bg-[#0a2e1e]/90 border border-[#e2b43b]/60 px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider text-[#f5c518] flex items-center gap-1.5 backdrop-blur-sm z-10">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Head of State
+                  {currentLang === 'bn' ? 'রাষ্ট্রপ্রধান' : 'Head of State'}
                 </div>
 
-                {/* Dark gradient fade for the nameplate */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#041a11] via-[#041a11]/40 to-transparent"></div>
+                {/* Direct Upload Real Photo Button on Desk */}
+                <label
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute top-3 right-3 bg-[#0a2e1e]/90 hover:bg-[#124b33] border border-[#ffd700] px-2.5 py-1 rounded-md text-[10px] font-bold text-[#ffd700] flex items-center gap-1.5 backdrop-blur-sm shadow-xl cursor-pointer transition-all hover:scale-105 z-10"
+                  title="Upload Exact Photo From Your Device"
+                >
+                  <Camera className="w-3.5 h-3.5 text-[#ffd700]" />
+                  <span>{currentLang === 'bn' ? 'আসল ছবি আপলোড' : 'Upload Real Photo'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        onUploadPhoto(file);
+                      }
+                    }}
+                  />
+                </label>
 
-                {/* Golden Desk Nameplate */}
+                {/* Dark gradient fade for the nameplate */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#041a11] via-[#041a11]/40 to-transparent pointer-events-none"></div>
+
+                {/* Golden Desk Nameplate matching reference */}
                 <div className="absolute bottom-3 inset-x-3 text-center">
-                  <div className="inline-block px-5 py-2 rounded-lg bg-gradient-to-r from-[#173d2a] via-[#102e20] to-[#173d2a] border-2 border-[#e2b43b] shadow-xl">
-                    <p className="font-cinzel text-xs text-emerald-200 uppercase tracking-widest">
+                  <div className="inline-block px-4 py-2 rounded-lg bg-gradient-to-r from-[#173d2a] via-[#102e20] to-[#173d2a] border-2 border-[#e2b43b] shadow-2xl">
+                    <p className="font-cinzel text-[10px] text-emerald-300 uppercase tracking-widest leading-none mb-1">
                       {currentLang === 'bn' ? 'রাষ্ট্রপতি' : 'PRESIDENT'}
                     </p>
-                    <p className="font-cinzel text-base sm:text-lg font-black tracking-widest text-[#ffd700] leading-none drop-shadow">
-                      LIMON
+                    <p className="font-cinzel text-xs sm:text-sm font-black tracking-widest text-[#ffd700] leading-none drop-shadow">
+                      {currentLang === 'bn' ? 'মামুন হোসেন লিমন' : 'MAMUN HOSSEN LIMON'}
                     </p>
                   </div>
                 </div>
@@ -245,24 +279,38 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </div>
             </div>
 
-            {/* Latest News Widget */}
+            {/* Latest News Widget with Dynamic Daily Fictional Stories */}
             <div className="rounded-2xl border border-[#174e37] bg-[#072418]/95 p-3.5 shadow-xl">
               <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-[#144732]">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-300">
-                  {currentLang === 'bn' ? 'সর্বশেষ সংবাদ' : 'Latest News'}
-                </h2>
-                <button
-                  onClick={() => onExploreClick()}
-                  className="text-[11px] text-[#f5c518] hover:underline flex items-center gap-0.5"
-                >
-                  <span>{currentLang === 'bn' ? 'সব দেখুন' : 'View All'}</span>
-                  <ChevronRight className="w-3 h-3" />
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-300">
+                    {currentLang === 'bn' ? 'দৈনিক সংবাদ বুলেটিন' : 'Daily News Gazette'}
+                  </h2>
+                </div>
+                
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={onGenerateNextStory}
+                    className="p-1 px-2 rounded-md bg-[#0f3d28] hover:bg-[#155437] border border-[#ffd700]/60 text-[#ffd700] text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-transform hover:scale-105"
+                    title="Generate a brand new fictional story immediately"
+                  >
+                    <Sparkles className="w-3 h-3 text-[#ffd700]" />
+                    <span>{currentLang === 'bn' ? 'নতুন নিউজ' : 'New Story'}</span>
+                  </button>
+                  <button
+                    onClick={onOpenPublishModal}
+                    className="p-1 rounded-md bg-[#0c3120] hover:bg-[#12452e] border border-[#1a5a3c] text-emerald-200 text-[10px] cursor-pointer"
+                    title="Publish custom news"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
 
               {/* News Items List */}
-              <div className="space-y-3">
-                {LATEST_NEWS.map((article) => (
+              <div className="space-y-2.5">
+                {(newsList && newsList.length > 0 ? newsList.slice(0, 4) : []).map((article) => (
                   <div
                     key={article.id}
                     onClick={() => onNewsClick(article)}
@@ -271,17 +319,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     <img
                       src={article.image}
                       alt={article.title}
-                      className="w-12 h-12 rounded-lg object-cover flex-shrink-0 border border-[#1b583f]"
+                      className="w-12 h-12 rounded-lg object-cover flex-shrink-0 border border-[#1b583f] group-hover:border-[#ffd700] transition-colors"
                     />
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-xs font-semibold text-white group-hover:text-[#f5c518] transition-colors line-clamp-1 leading-snug">
-                        {currentLang === 'bn' ? article.titleBn : article.title}
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="text-[9px] uppercase font-bold text-[#f5c518] px-1 rounded bg-[#0e3b27]">
+                          {article.category}
+                        </span>
+                        <span className="text-[9px] text-emerald-400/80 font-medium">
+                          {article.date}
+                        </span>
+                      </div>
+                      <h3 className="text-xs font-semibold text-white group-hover:text-[#f5c518] transition-colors line-clamp-1 leading-snug mt-0.5">
+                        {currentLang === 'bn' ? (article.titleBn || article.title) : article.title}
                       </h3>
-                      <p className="text-[10px] text-[#e2b43b]/90 font-medium">
-                        {article.date}
-                      </p>
                       <p className="text-[10px] text-emerald-300/70 line-clamp-1 mt-0.5">
-                        {currentLang === 'bn' ? article.summaryBn : article.summary}
+                        {currentLang === 'bn' ? (article.summaryBn || article.summary) : article.summary}
                       </p>
                     </div>
                   </div>
