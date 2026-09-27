@@ -1,0 +1,6 @@
+{
+  "name": "CivicPort - Official Government Services & Records Portal",
+  "description": "The official digital portal for municipal and state public services, permit tracking, property records, council meetings, and citizen requests.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
