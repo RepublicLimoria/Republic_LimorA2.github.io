@@ -29,6 +29,7 @@ import { NewsPublishModal } from './components/limoria/NewsPublishModal.tsx';
 import { Language, ServiceItem, NewsArticle, GalleryItem, EventItem } from './types/limoria.ts';
 import { LIMORIA_SERVICES, LATEST_NEWS, PRESIDENT_BIO } from './data/limoriaData.ts';
 import { getStoredOrDailyNews, generateFictionalNewsStory, saveNewsToStorage } from './services/limoriaNewsService.ts';
+import { AnimatedSection } from './components/common/AnimatedSection.tsx';
 
 export default function App() {
   const [currentLang, setCurrentLang] = useState<Language>('en');
@@ -244,97 +245,109 @@ export default function App() {
         onSearchSubmit={handleGlobalSearch}
       />
 
-      {/* 3. Quick Actions 8-Tile Bar */}
-      <QuickActionsBar
-        currentLang={currentLang}
-        onActionClick={handleActionClick}
-      />
+      {/* 3. Quick Actions 8-Tile Bar with Smooth Fade-in-up */}
+      <AnimatedSection delay={50} direction="up">
+        <QuickActionsBar
+          currentLang={currentLang}
+          onActionClick={handleActionClick}
+        />
+      </AnimatedSection>
 
       {/* 4. Middle Section (About Limoria + Interactive Map + Government Services) */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
         
-        {/* 3-Card Row matching screenshot */}
+        {/* 3-Card Row with Staggered Fade-in-up */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           
           {/* Card 1: About Limoria (approx 3 cols) */}
-          <div className="lg:col-span-3">
+          <AnimatedSection delay={0} direction="up" className="lg:col-span-3 flex flex-col h-full">
             <AboutLimoriaCard
               currentLang={currentLang}
               onLearnMoreClick={() => setIsPresidentModalOpen(true)}
             />
-          </div>
+          </AnimatedSection>
 
           {/* Card 2: Interactive Map of the 8 Regions (approx 5.5 cols) */}
-          <div className="lg:col-span-5">
+          <AnimatedSection delay={120} direction="up" className="lg:col-span-5 flex flex-col h-full">
             <InteractiveMapCard
               currentLang={currentLang}
               onOpenFullMap={() => setIsFullMapModalOpen(true)}
             />
-          </div>
+          </AnimatedSection>
 
           {/* Card 3: Government Services (approx 3.5 cols) */}
-          <div className="lg:col-span-4">
+          <AnimatedSection delay={240} direction="up" className="lg:col-span-4 flex flex-col h-full">
             <GovernmentServicesGrid
               currentLang={currentLang}
               onServiceSelect={(srv) => setSelectedService(srv)}
               onViewAllServices={() => setSelectedService(LIMORIA_SERVICES[0])}
             />
-          </div>
+          </AnimatedSection>
 
         </section>
 
         {/* 5. Bottom Section Grid (Gallery, Tourism, Key Stats, Events, FAQ) */}
-        <section className="space-y-6">
+        <section className="space-y-10">
           
-          {/* Row A: Gallery & Tourism Spotlight */}
+          {/* Row A: Gallery & Tourism Spotlight with Staggered Animations */}
           <div id="gallery-section" className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-            <div className="md:col-span-7">
+            <AnimatedSection delay={0} direction="up" className="md:col-span-7 flex flex-col h-full">
               <GalleryCarousel
                 currentLang={currentLang}
                 onOpenViewer={(item) => setSelectedGalleryItem(item)}
               />
-            </div>
-            <div className="md:col-span-5">
+            </AnimatedSection>
+            <AnimatedSection delay={150} direction="up" className="md:col-span-5 flex flex-col h-full">
               <TourismSpotlight
                 currentLang={currentLang}
                 onExploreTourism={() => setIsVideoModalOpen(true)}
               />
-            </div>
+            </AnimatedSection>
           </div>
 
-          {/* Row B: Key Statistics, Upcoming Events, and FAQ */}
+          {/* Row B: Key Statistics, Upcoming Events, and FAQ with Staggered Animations */}
           <div id="faq-section" className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-            <KeyStatsCard currentLang={currentLang} />
-            <UpcomingEventsCard
-              currentLang={currentLang}
-              onEventClick={(ev) => {
-                showNotification(
-                  currentLang === 'bn'
-                    ? `ইভেন্ট বিবরণী: ${ev.titleBn} (${ev.location})`
-                    : `Event RSVP open: ${ev.title} at ${ev.location}`
-                );
-              }}
-            />
-            <FaqSection
-              currentLang={currentLang}
-              onFaqSelect={(faq) => {
-                // If user clicks question, can optionally prompt assistant
-              }}
-            />
+            <AnimatedSection delay={0} direction="up" className="flex flex-col h-full">
+              <KeyStatsCard currentLang={currentLang} />
+            </AnimatedSection>
+            
+            <AnimatedSection delay={150} direction="up" className="flex flex-col h-full">
+              <UpcomingEventsCard
+                currentLang={currentLang}
+                onEventClick={(ev) => {
+                  showNotification(
+                    currentLang === 'bn'
+                      ? `ইভেন্ট বিবরণী: ${ev.titleBn} (${ev.location})`
+                      : `Event RSVP open: ${ev.title} at ${ev.location}`
+                  );
+                }}
+              />
+            </AnimatedSection>
+
+            <AnimatedSection delay={300} direction="up" className="flex flex-col h-full">
+              <FaqSection
+                currentLang={currentLang}
+                onFaqSelect={(faq) => {
+                  // Optional callback
+                }}
+              />
+            </AnimatedSection>
           </div>
 
         </section>
 
       </main>
 
-      {/* 6. Footer (Coat of arms, links, contact, weather widget, PWA install) */}
-      <Footer
-        currentLang={currentLang}
-        onNavigate={handleNavigation}
-        onScrollToTop={handleScrollToTop}
-        onInstallPwa={handleInstallPwa}
-        onOpenGitHubModal={() => setIsGitHubModalOpen(true)}
-      />
+      {/* 6. Footer with Smooth Fade-in-up */}
+      <AnimatedSection delay={0} direction="up">
+        <Footer
+          currentLang={currentLang}
+          onNavigate={handleNavigation}
+          onScrollToTop={handleScrollToTop}
+          onInstallPwa={handleInstallPwa}
+          onOpenGitHubModal={() => setIsGitHubModalOpen(true)}
+        />
+      </AnimatedSection>
 
       {/* 7. Floating Limoria AI Assistant (Gemini Powered & Bilingual) */}
       <LimoriaAiAssistant
